@@ -1,0 +1,20 @@
+function [] = h5_save(filename, mov, datasetname)
+% H5_SAVE(filename, mov)
+% H5_SAVE(filename, mov, datasetname)
+
+% Handle default dataset name.
+if nargin == 2
+    datasetname = '/mov';
+end
+
+% Add leading backslash, if necessary.
+if ~strcmp(datasetname(1), '/')
+    datasetname = strcat('/', datasetname);
+end
+
+% Create the h5 file, and write to it.
+h5create(filename, datasetname, size(mov));
+h5write(filename, datasetname, mov);
+
+end
+
