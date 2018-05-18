@@ -82,9 +82,9 @@ master_file_exp01_SequentialGratings;
 
 %% Do some cleanup (e.g., delete redundant files.).
 
-% - Delete raw movie file to clear up disk space.
-files = dir(fullfile(sesDir, 'Image*.raw'));
-filename = fullfile(sesDir, files(1).name);
-delete(filename);
+% - Delete raw movie file to clear up disk space?
+% files = dir(fullfile(sesDir, 'Image*.raw'));
+% filename = fullfile(sesDir, files(1).name);
+% delete(filename);
 
 end
