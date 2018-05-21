@@ -24,9 +24,9 @@ end
 
 function [] = importDate(mouse, date)
     % Export all data for a given mouse and date.
-    if ~exist(fullfile(dataroot('local'), mouse, date), 'dir');
-        mkdir(fullfile(dataroot('local'), mouse, date))
-    end    
+    if ~exist(fullfile(dataroot('local'), mouse, date), 'dir')
+        mkdir(fullfile(dataroot('local'), mouse, date));
+    end
     expNumDirs = listExpNums(mouse, date, 'local');
     for ii=1:numel(expNumDirs)
         importSession(mouse, date, expNumDirs{ii});
@@ -46,14 +46,14 @@ function [] = importSession(mouse, date, expnum)
     % Copy over .mat files.
     matFiles = listFiles(fullfile(localSesDir, '*.mat'));
     for ii=1:numel(matFiles)
-        source = fullfile(localSesDir, matFiles{ii});
-        copyfile(source, remoteSesDir);
+        remoteFile = fullfile(remoteSesDir, matFiles{ii});
+        copyfile(remoteFile, localSesDir);
     end
     
     % Copy registered movie file.
-    regDir = fullfile(localSesDir, 'mov');
+    regDir = fullfile(RemoteSesDir, 'mov');
     if exist(regDir, 'dir')
-        destDir = fullfile(remoteSesDir, 'mov');
+        destDir = fullfile(localSesDir, 'mov');
         mkdir(destDir);
         copyfile(regDir, destDir);
     end
