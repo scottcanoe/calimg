@@ -1,3 +1,6 @@
 function path = calimgRoot()
-    path = '/home/scott/Code/MATLAB/calimg';
+    % Returns top-level 'calimg' directory.
+    funcName = [mfilename('fullpath') '.mat'];
+    [genutilsDir, ~, ~] = fileparts(funcName);
+    [path, ~, ~] = fileparts(genutilsDir);
 end

@@ -1,8 +1,13 @@
-function path = dataroot(newDataRoot)
-% Returns or sets the value of 'CALIMG_DATAROOT" environment variable.
+function path = dataroot(localOrRemote)
+% Returns the root directory where data is stored. 
 
+narginchk(0, 1);
 if nargin == 0
-    % Return environment variable.
+    localOrRemote = 'local';
+end
+
+if strcmp(localOrRemote, 'local')
+    % Return local dataroot.
     path = getenv('CALIMG_DATAROOT');
     if isempty(path)
         msg = 'Cannot find environment variable for CALIMG_DATAROOT.';
@@ -11,13 +16,16 @@ if nargin == 0
         warning(msg);
     end
     
-else
-    % Check existence.
-    if ~exist(newDataRoot, 'dir')
-        msg = 'New data root is not an existing directory';
+elseif strcmp(localOrRemote, 'remote')
+    % Return remote dataroot.
+    path = getenv('CALIMG_DATAROOT_REMOTE');
+    if isempty(path)
+        msg = 'Cannot find environment variable for CALIMG_DATAROOT_REMOTE.';
+        msg = [msg ' Did you open MATLAB via command line (required for linux)?'];
+        msg = [msg ' Has the environment variable been set properly?'];
         warning(msg);
     end
-    setenv('CALIMG_DATAROOT', newDataRoot);
-    path = newDataRoot;
+else
+    error('"localOrRemote" argument must be either "local" or "remote"');
 end
 

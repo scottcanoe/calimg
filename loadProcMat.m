@@ -1,5 +1,6 @@
 function procmat = loadProcMat(mouse, date, expnum)
 % PROCFILE Load stored .mat file produced by using suite2ps gui.
+% WARNING: this will be modified soon.
 
 narginchk(3, 3);
 

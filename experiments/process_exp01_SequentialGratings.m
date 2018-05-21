@@ -8,7 +8,7 @@ if ~exist(sesDir, 'dir')
 end
 
 % Define parameters used in exp01_SequentialGratings.m.
-stimCodes = 0.0:0.2:3.0;
+eventValues = 0.0:0.2:3.0;
 nPresentations = 50;  % Number of sequences per block.
 nBlocks = 4;
 
@@ -28,30 +28,30 @@ nBlocks = 4;
 %   9   |   1.8   | A (DCBA)
 %  10   |   2.0   | gray (DCBA)
 %  11   |   2.2   | A (ABCD novel timing)
-%  12   |   2.4   | A (ABCD novel timing)
-%  13   |   2.6   | A (ABCD novel timing)
-%  14   |   2.8   | A (ABCD novel timing)
-%  15   |   3.0   | A (ABCD novel timing)
+%  12   |   2.4   | B (ABCD novel timing)
+%  13   |   2.6   | C (ABCD novel timing)
+%  14   |   2.8   | D (ABCD novel timing)
+%  15   |   3.0   | bray (ABCD novel timing)
 
 %% Create 'frameInfo.mat' file, find experiment bounds, and trim it.
 disp('Creating frameInfo.');
-frameInfo = createFrameInfo(mouse, date, expnum, 'StimCodes', stimCodes);
+frameInfo = createFrameInfo(mouse, date, expnum, 'EventValues', eventValues);
 
 % - Find index of last frame captured during experiment.
 lastFrameIndex = length(frameInfo);
 
 % - Find index of first frame that happens during the experiment (i.e., where
 %   the stim code stops being 0.
-codes = extractfield(frameInfo, 'StimCode');
+vals = extractfield(frameInfo, 'EventValue');
 firstFrameIndex = 1;
-while codes(firstFrameIndex) == 0
+while vals(firstFrameIndex) == 0
     firstFrameIndex = firstFrameIndex + 1;
 end
 
 % - Finally, trim the frame info and save it.
-frameInfo = frameInfo(firstFrameIndex:lastFrameIndex);
+frameInfo = frameInfo(firstFrameIndex:lastFrameIndex); %#ok<NASGU>
 save(fullfile(sesDir, 'frameInfo.mat'), 'frameInfo');
-clear codes; % no longer up-to-date.
+clear vals; % no longer up-to-date.
 
 %% Load raw movie, trim it, and save it as a tiff series readable by Suite2P.
 
@@ -80,11 +80,26 @@ assignin('base', 'db', db);
 % % Finally, run Suite2P.
 master_file_exp01_SequentialGratings;
 
-%% Do some cleanup (e.g., delete redundant files.).
+%% Do some cleanup (e.g., delete redundant files.)
 
-% - Delete raw movie file to clear up disk space?
-% files = dir(fullfile(sesDir, 'Image*.raw'));
-% filename = fullfile(sesDir, files(1).name);
-% delete(filename);
+% - Delete raw movie file to clear up disk space.
+files = dir(fullfile(sesDir, 'Image*.raw'));
+filename = fullfile(sesDir, files(1).name);
+delete(filename);
+
+% - Delete input directory to clear up disk space.
+rmdir(fullfile(s2p.inputRoot, mouse, date, expnum), 's');
+
+% - Move registration results into main folder.
+regDir = fullfile(s2p.registrationRoot, mouse, date, expnum, 'Plane1');
+destDir = fullfile(sesDir, 'mov');
+% mkdir(destDir);
+movefile(regDir, destDir);
+rmdir(fullfile(s2p.registrationRoot, mouse, date, expnum), 's');
+
+% - Move results into main folder.
+resDir = fullfile(s2p.resultsRoot, mouse, date, expnum);
+copyfile(resDir, sesDir);
+rmdir(resDir, 's');
 
 end

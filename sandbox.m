@@ -1,15 +1,17 @@
-mouse = '330873-A';
-date = '2018-05-14';
-expnum = '1';
-stimCodes = (0:15)*(0.2);
-createFrameInfo(mouse, date, expnum, 'StimCodes', stimCodes);
-
-fname = fullfile(dataroot, mouse, date, expnum, 'frameInfo.mat');
-clear frameInfo;
-load(fname)
-v = extractfield(frameInfo, 'Voltage');
-c = extractfield(frameInfo, 'StimCode');
-
-sd = loadSyncData(mouse,date,expnum);
-ae = sd('AnalogEvents');
-strobes = sd('Strobe');
+mice = {'330873-A', '330873-C'};
+for ii=1:numel(mice)
+    sesDirs = listSessionDirs(mice{ii});
+    for jj=1:numel(sesDirs)
+        source = fullfile(sesDirs{jj}, 'mov', 'Plane1');
+        dest = fullfile(sesDirs{jj}, 'mov');
+        if exist(source)
+            rmdir(source)
+        end
+%         files = listFiles(source);
+%         for kk=1:length(files)
+%             fname = fullfile(source, files{kk});
+%             status = movefile(fname, dest);
+%             rmdir(source);
+%         end
+    end
+end

@@ -1,4 +1,4 @@
 function directory = inputRoot()
-    directory = fullfile(dataroot, 'Suite2P', 'input');
+    directory = fullfile(dataroot, 'S2P', 'input');
 end
 

@@ -1,4 +1,4 @@
-classdef SyncDataManager < handle & matlab.mixin.SetGet
+classdef StrobedEventDecoder < handle & matlab.mixin.SetGet
     % SyncDataManager This class creates a struct array of events that
     % correspond to the image frame onsets.
     %  
@@ -11,39 +11,30 @@ classdef SyncDataManager < handle & matlab.mixin.SetGet
                                  'FrameTrigger', ...
                                  'FrameOut', ...
                                  'time'};
-        DefaultStimCodes = [];
+        DefaultEventValues = [];
     
     end
     
     properties (SetAccess=protected)
         
-        StrobeLength            % Inferred strobe duration (in indices, not time).
         SyncData                % Map of sync data.
         Events                  % Struct array of all strobed events.
         ExperimentStart         % Index at which experiment started (i.e., first frame captured).
         ExperimentStop          % Index at which experiment stopped.
-        
-        % Signals.
-        AnalogEvents
-        Strobes
-        FrameTrigger
-        FrameOut
-        time
-
-                
+                        
     end
     
     properties
         
-        CalibrationSequence     % Calibration sequence in 'AnalogEvents' line.
-        RequiredArrays          % Used for validation purposes.
-        StimCodes               % Stimulus codes for discrete encoding.
+        CalibrationSequence       % Calibration sequence in 'AnalogEvents' line.
+        RequiredArrays            % Used for validation purposes.
+        EventValues               % Stimulus codes for discrete encoding.
   
     end
     
     methods
         
-        function obj = SyncDataManager(varargin)
+        function obj = StrobedEventDecoder(varargin)
             
             % Set property values.
             obj.CalibrationSequence = parseVarargin(varargin, ...
@@ -52,9 +43,9 @@ classdef SyncDataManager < handle & matlab.mixin.SetGet
             obj.RequiredArrays = parseVarargin(varargin, ...
                                               'RequiredArrays',...
                                                obj.DefaultRequiredArrays);
-            obj.StimCodes = parseVarargin(varargin, ...
-                                         'StimCodes', ...
-                                          obj.DefaultStimCodes);
+            obj.EventValues = parseVarargin(varargin, ...
+                                           'EventValues', ...
+                                            obj.DefaultEventValues);
             
             % Initialize all other properties.
             obj.reset();
@@ -105,8 +96,8 @@ classdef SyncDataManager < handle & matlab.mixin.SetGet
             end
             
             % Set their stimcodes.
-            if not(isempty(obj.StimCodes))
-                obj.setStimCodes();
+            if not(isempty(obj.EventValues))
+                obj.setEventValues();
             end
                                                         
         end
@@ -117,7 +108,6 @@ classdef SyncDataManager < handle & matlab.mixin.SetGet
             
         function reset(obj)
             obj.SyncData = containers.Map;
-            obj.StrobeLength = NaN;
             obj.Events = struct([]);
             obj.ExperimentStart = NaN;
             obj.ExperimentStop = NaN;
@@ -134,8 +124,6 @@ classdef SyncDataManager < handle & matlab.mixin.SetGet
             strobe_changed = int32(find(strobe_diffs));
             strobe_rise = strobe_changed(1:2:end);
             strobe_fall = strobe_changed(2:2:end);
-            strobe_length = median(strobe_fall - strobe_rise);
-            obj.StrobeLength = strobe_length;
             
             % Do some light validation, then generate events.
             assert(length(strobe_rise) == length(strobe_fall));
@@ -144,7 +132,7 @@ classdef SyncDataManager < handle & matlab.mixin.SetGet
             obj.Events = struct('Start', {}, ...    % index
                                 'Stop', {}, ...     % index
                                 'Voltage', {}, ...
-                                'StimCode', {}, ...
+                                'EventValue', {}, ...
                                 'Experiment', {});
 
             % Convenience variables.
@@ -161,8 +149,8 @@ classdef SyncDataManager < handle & matlab.mixin.SetGet
                 newEvent = struct('Start', start, ...
                                   'Stop', stop, ...
                                   'Voltage', ae(start), ...
-                                  'StimCode', NaN, ...
-                                  'Experiment', obj.overlap(start, stop));
+                                  'EventValue', NaN, ...
+                                  'Experiment', obj.overlaps(start, stop));
                 obj.Events(length(obj.Events)+1) = newEvent;
             end
             
@@ -173,8 +161,8 @@ classdef SyncDataManager < handle & matlab.mixin.SetGet
                 newEvent = struct('Start', start, ...
                                   'Stop', stop, ...
                                   'Voltage', ae(start), ...
-                                  'StimCode', NaN, ...
-                                  'Experiment', obj.overlap(start, stop));
+                                  'EventValue', NaN, ...
+                                  'Experiment', obj.overlaps(start, stop));
                 obj.Events(length(obj.Events)+1) = newEvent;
             end
             
@@ -186,8 +174,8 @@ classdef SyncDataManager < handle & matlab.mixin.SetGet
             newEvent = struct('Start', start, ...
                               'Stop', stop, ...
                               'Voltage', ae(start), ...
-                              'StimCode', NaN, ...
-                              'Experiment', obj.overlap(start, stop));
+                              'EventValue', NaN, ...
+                              'Experiment', obj.overlaps(start, stop));
             obj.Events(length(obj.Events)+1) = newEvent;
             
         end
@@ -219,22 +207,22 @@ classdef SyncDataManager < handle & matlab.mixin.SetGet
         end
         
         
-        function setStimCodes(obj)
+        function setEventValues(obj)
             % Sets the 'StimCode' field of events that occur during
             % experiment.            
             for ii = 1:length(obj.Events)
-                if ~obj.Events(ii).Experiment
-                    continue
-                end
+%                 if ~obj.Events(ii).Experiment
+%                     continue
+%                 end
                 val = obj.Events(ii).Voltage;
-                [~, index] = min(abs(val - obj.StimCodes));
-                nearest = obj.StimCodes(index);
-                obj.Events(ii).StimCode = nearest;
+                [~, index] = min(abs(val - obj.EventValues));
+                nearest = obj.EventValues(index);
+                obj.Events(ii).EventValue = nearest;
             end
         end
         
         
-        function tf = overlap(obj, start, stop)
+        function tf = overlaps(obj, start, stop)
             % Small helper function used by 'SyncDataManager.createEvents()'. 
             % Determines whether a frame lies within the experimental region.
             % 'start' and 'stop' refer to the index of strobe(i) and the

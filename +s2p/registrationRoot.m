@@ -1,4 +1,4 @@
 function directory = registrationRoot()
-    directory = fullfile(dataroot, 'Suite2P', 'registration');
+    directory = fullfile(dataroot, 'S2P', 'registration');
 end
 

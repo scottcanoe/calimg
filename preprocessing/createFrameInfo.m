@@ -6,7 +6,7 @@ function frameInfo = createFrameInfo(mouse, date, expnum, varargin)
 %
 % Possible keyed arguments:
 %   - 'CalibrationSequence' : gets passed into SyncDataManager.
-%   - 'StimCodes' : gets passed into SyncDataManager.
+%   - 'EventValues' : gets passed into SyncDataManager.
 
 
 % Parse arguments.
@@ -17,49 +17,52 @@ if ~exist(sesDir, 'dir')
 end
 
 calibrationSequence = parseVarargin(varargin, 'CalibrationSequence', []);
-stimCodes = parseVarargin(varargin, 'StimCodes', []);
+eventValues = parseVarargin(varargin, 'EventValues', []);
 
 % Load sync data and process it with SyncDataManager class.
-SyncData = loadSyncData(mouse, date, expnum);
-sdm = SyncDataManager('CalibrationSequence', calibrationSequence, ...
-                      'StimCodes', stimCodes);
-sdm.run(SyncData);             
+syncData = loadSyncData(mouse, date, expnum);
+sed = StrobedEventDecoder('CalibrationSequence', calibrationSequence, ...
+                          'EventValues', eventValues);
+sed.run(syncData);             
 
 % Load movie, and remove trailing unneeded frames.
-frameStarts = find(diff(SyncData('FrameOut')));
-frameStarts = frameStarts(frameStarts < sdm.ExperimentStop);
+frameStarts = find(diff(syncData('FrameOut')));
+frameStarts = frameStarts(frameStarts < sed.ExperimentStop);
 
 %% Create Frame Info. For now on, switch to t0 centered at beginning of the
 % experiment -- not the beginning of Thorsync recording.
-time = SyncData('time');
-t0 = time(sdm.ExperimentStart);
+time = syncData('time');
+t0 = time(sed.ExperimentStart);
 time = time - t0;
 frameTime = time(frameStarts);
 frameInfo = struct('tStart', {}, ...
                    'tStop', {}, ...
                    'Voltage', {}, ...
-                   'StimCode', {});
+                   'EventValue', {});
 
-eventStarts = time(extractfield(sdm.Events, 'Start'));
+eventStarts = time(extractfield(sed.Events, 'Start'));
 for ii = 1:length(frameTime)
     
     % Initialize single frame info with start/stop times.
     info = struct('tStart', frameTime(ii), ...
                   'tStop', NaN, ...
                   'Voltage', NaN, ...
-                  'StimCode', NaN);
+                  'EventValue', NaN);
     
     if ii == length(frameTime)
-        info.tStop = time(sdm.ExperimentStop);
+        info.tStop = time(sed.ExperimentStop);
     else
         info.tStop = frameTime(ii+1);
     end
               
-    % Find nearest event and use its voltage and stimcode fields.
-    [~, index] = min(abs(info.tStart - eventStarts));
-    nearest = sdm.Events(index);
+    % Find nearest (previous) event and use its voltage and event value fields.
+    index = length(eventStarts(eventStarts <= info.tStart));
+    if index == 0
+        index = 1;
+    end
+    nearest = sed.Events(index);
     info.Voltage = nearest.Voltage;
-    info.StimCode = nearest.StimCode;
+    info.EventValue = nearest.EventValue;
     
     % Finally, add the frame's info to the growing list.
     frameInfo(length(frameInfo) + 1) = info;
