@@ -1,5 +1,5 @@
 function [pos_start, pos_stop] = sanitizeSlice(start, stop, len)
-%UNTITLED6 Summary of this function goes here
+% UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
 narginchk(3, 3);

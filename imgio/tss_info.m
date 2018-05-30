@@ -6,13 +6,15 @@ function varargout = tss_info(parentDir)
 %   dtype : a char array describing the data type (e.g., 'uint16');
 %   bytes : size of all tiffs on disk together.
 %   filenames : absolute paths to files.
-
-
+%
+% collectiveInfo = TIFFSERIES(__)
+% [collectiveInfo, individualInfos] = TIFFSERIES(___)
 % Make sure parentDir has a trailing backslash.
 parentDir = asdir(parentDir);
 
 % Find files with both extensions '.tif' and '.tiff'.
-files = [dir([parentDir '*.tif']); dir([parentDir '*.tiff'])];
+files = [dir(fullfile(parentDir, '*.tif')) ...
+         dir(fullfile(parentDir, '*.tiff'))];
 
 % Get all file names into a cell array, and add up bytes.
 numStacks = length(files);

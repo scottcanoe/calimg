@@ -8,7 +8,7 @@ nDirs = 0;
 
 for ii=1:length(contents)
     s = contents(ii);
-    if and(s.isdir, ~ismember(s.name, '.', '..'))
+    if and(s.isdir, ~ismember(s.name, {'.', '..'}))
         dirs{nDirs+1} = s.name;
         nDirs = nDirs + 1;
     end
