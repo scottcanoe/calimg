@@ -2,9 +2,9 @@ function path = homedir()
 % Returns absolute path to home directory.
 
 if isunix
-    path = asdir(getenv('HOME'));
+    path = getenv('HOME');
 else
-    path = asdir(getenv('USERPROFILE'));
+    path = getenv('USERPROFILE');
 end
 
 if isempty(path)

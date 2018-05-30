@@ -1,6 +1,7 @@
 function files = listFiles(parentDir, includeDirs)
 % LISTFILES Get a list of files in human-sorted order. Directories can be
-% excluded by settings 'includeDirs' to false.
+% excluded by settings 'includeDirs' to false. The files '.DS_Store' and
+% 'Thumbs.db' are excluded.
 
 narginchk(1, 2)
 if nargin==1
