@@ -13,7 +13,8 @@ collapse = parseVarargin(varargin, 'Collapse', false);
 ix = struct('ix', {});
 
 % Make an indicator function, and find where it rises and falls.
-indicator = int32([0, codes == eltCode, 0]);
+% indicator = int32([0, codes == eltCode, 0]);
+indicator = [0, abs(codes - eltCode)<eps, 0];
 
 % If this stimulus isn't found, return immediately.
 if ~any(indicator)
