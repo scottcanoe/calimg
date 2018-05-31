@@ -7,10 +7,10 @@ function info = tiffstack_info(filename)
 %   dtype : a char array describing the data type (e.g., 'uint16');
 %   bytes : size of the file in bytes.
 
-raw_info = imfinfo(filename);
+tempInfo = imfinfo(filename);
 info = struct;
 
-info.numFrames = length(raw_info);
+info.numFrames = length(tempInfo);
 
 % Infer data type.
 sample = squeeze(imread(filename, 1));
