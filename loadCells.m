@@ -1,7 +1,7 @@
 function cells = loadCells(arg1, arg2, arg3)
-% LOADROIS Load struct array of ROIs and their associated info.
-% LOADROID(procmat)
-% LOADROID(mouse, date, expnum)
+% LOADCELLS Load struct array of ROIs that are cells and their associated info.
+% LOADCELLS(procmat)
+% LOADCELLS(mouse, date, expnum)
 
 if nargin == 1
     procmat = arg1;
@@ -11,36 +11,22 @@ else
     error('bad argument structure');
 end
 
-IDs = getCellIDs(procmat);
+% Find IDs of cells (i.e., ROIs with 'iscell' = true).
+iscellCells = extractfield(procmat.dat.stat, 'iscell');
+iscell = zeros(size(iscellCells), 'logical');
+for ii=1:length(iscell)
+    iscell(ii) = cell2mat(iscellCells(ii));
+end
+IDs = find(iscell)';
 
 % Initialize struct array to hold cells.
 cells(length(IDs)) = struct();
-cells(1).ID = 0;
-cells(1).iscell = true;
-cells(1).neuropilCoefficient = 0;
-cells(1).xpix = [];
-cells(1).ypix = [];
-cells(1).ipix = [];
-cells(1).npix = 0;
-cells(1).isoverlap = false;
-cells(1).lam = 0;
-cells(1).lambda = 0;
-cells(1).med = [];
-cells(1).std = 0;
-cells(1).skew = 0;
-cells(1).pct = 0;
-cells(1).footprint = 0;
-cells(1).mimgProjAbs = 0;
-cells(1).aspect_ratio = 0;
-cells(1).Fcell = [];
-cells(1).Fneu = [];
-cells(1).trace = [];
 
 Fcell = cell2mat(procmat.dat.Fcell);
 FcellNeu = cell2mat(procmat.dat.FcellNeu);
 
 for ii = 1:length(IDs)
-    stat = procmat.dat.stat(ii);
+    stat = procmat.dat.stat(IDs(ii));
     cells(ii).ID = IDs(ii);
     cells(ii).iscell = stat.iscell;
     cells(ii).neuropilCoefficient = stat.neuropilCoefficient;
