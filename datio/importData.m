@@ -1,6 +1,6 @@
 function [] = importData(mouse, date, expnum, varargin)
 % IMPORTDATA Move data from remote to local.
-narginchk(1, 3);
+narginchk(1, 4);
 movie = parseVarargin(varargin, 'Movie', true);
 if nargin == 1
     importMouse(mouse, movie);

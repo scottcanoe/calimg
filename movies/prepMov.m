@@ -1,4 +1,4 @@
-function mov = prepMovie(mov, smoothNum)
+function mov = prepMov(mov, smoothNum)
 % PREPMOVIE Prepares movie for viewing by rescaling and smoothing.
 
 narginchk(1, 2)

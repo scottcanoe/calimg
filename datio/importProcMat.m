@@ -52,4 +52,11 @@ function [] = importSession(mouse, date, expnum, movie)
     source = fullfile(file.folder, file.name);
     copyfile(source, localSesDir);
     
+    % Copy over frameInfo
+    file = dir(fullfile(remoteSesDir, 'frameInfo.mat'));
+    if isempty(file)
+        errordlg(['missing frameInfo.mat for ',mouse,',',date,',',expnum]);
+    end
+    source = fullfile(file.folder, file.name);
+    copyfile(source, localSesDir);
 end
