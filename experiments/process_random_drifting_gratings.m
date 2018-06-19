@@ -1,4 +1,4 @@
-function [] = process_exp01_SequentialGratings(mouse, date, expnum)
+function [] = process_random_drifting_gratings(mouse, date, expnum)
 
 % Prepare some values and do some light validation.
 expnum = num2str(expnum);
@@ -8,30 +8,8 @@ if ~exist(sesDir, 'dir')
 end
 
 % Define parameters used in exp01_SequentialGratings.m.
-eventValues = 0.0:0.2:3.0;
-% nPresentations = 50;  % Number of sequences per block.
-% nBlocks = 4;
+eventValues = [0.0, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5];
 
-% The following table mirrors the structure in exp01_SequentialGratings.m.
-%
-% Stim. | Voltage | Description
-% ------------------------------
-%   0   |   0.0   | interblock?
-%   1   |   0.2   | A (ABCD)
-%   2   |   0.4   | B (ABCD)
-%   3   |   0.6   | C (ABCD)
-%   4   |   0.8   | D (ABCD)
-%   5   |   1.0   | gray (ABCD)
-%   6   |   1.2   | D (DCBA)
-%   7   |   1.4   | C (DCBA)
-%   8   |   1.6   | B (DCBA)
-%   9   |   1.8   | A (DCBA)
-%  10   |   2.0   | gray (DCBA)
-%  11   |   2.2   | A (ABCD novel timing)
-%  12   |   2.4   | B (ABCD novel timing)
-%  13   |   2.6   | C (ABCD novel timing)
-%  14   |   2.8   | D (ABCD novel timing)
-%  15   |   3.0   | bray (ABCD novel timing)
 
 %% Create 'frameInfo.mat' file, find experiment bounds, and trim it.
 disp('Creating frameInfo.');
@@ -74,7 +52,7 @@ clear db;
 db(1).mouse_name    = mouse;
 db(1).date          = date;
 db(1).expts         = expnum;
-db(1).diameter      = 14; % Taken at 2X. Make this dynamic later.
+db(1).diameter      = 2; % Taken at 2X. Make this dynamic later.
 assignin('base', 'db', db);
 
 % % Finally, run Suite2P.
