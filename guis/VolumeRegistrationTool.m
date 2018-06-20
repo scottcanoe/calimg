@@ -98,6 +98,8 @@ classdef VolumeRegistrationTool < guiClass
         % Button pushed function: LoadReferenceVolumeButton
         function LoadReferenceVolumeButtonPushed(obj, event)
             
+            fprintf('Loading reference volume...');
+            
             % Load the volume.
             try
                 startDir = dataroot;
@@ -105,7 +107,6 @@ classdef VolumeRegistrationTool < guiClass
                 startDir = homedir;
             end
             parentDir = uigetdir(startDir);
-            disp('Loading reference volume...');
             obj.referenceVolume = obj.buildVolumeStruct(parentDir);
                         
             % Update axes.
@@ -122,15 +123,16 @@ classdef VolumeRegistrationTool < guiClass
             s = num2str(size(vol, 3));
             obj.handles.ReferenceVolumePlanesLabel.String = s;
            
-            disp('Complete');
+            fprintf('Complete.\n');
         end
 
         % Button pushed function: LoadTestVolumeButton
         function LoadTestVolumeButtonPushed(obj, event)
             
+            fprintf('Loading test volume...');
+            
             % Load the volume.
             if ischar(event)
-                disp('Loading test volume...');
                 parentDir = event;
             else
                 try
@@ -156,7 +158,7 @@ classdef VolumeRegistrationTool < guiClass
             s = num2str(size(vol, 3));
             obj.handles.TestVolumePlanesLabel.String = s;
            
-            disp('Complete');
+            fprintf('Complete.\n');
         end
 
         % Button pushed function: RefreshTestVolumeButton
@@ -186,23 +188,20 @@ classdef VolumeRegistrationTool < guiClass
             
             refVol = obj.trimVolume('reference');
             testVol = obj.trimVolume('test');
-            disp(size(refVol));
+
             tic;
             [optimizer, metric] = imregconfig('monomodal');
-            tform = imregtform(testVol, refVol, 'rigid', optimizer, metric);            
-            toc;
-            T = tform.T;
-            obj.T = T;
-            disp(T);
+            fprintf('Estimating displacement... ');
+            tform = imregtform(testVol, refVol, 'translation', optimizer, metric);
+            timeElapsed = toc;
+            fprintf('Completed in %.2f seconds.\n', timeElapsed);
+            T = tform.T;    %#ok<PROPLC>
+            obj.T = T;      %#ok<PROPLC>
             
-            xOff = T(4, 1);
-            yOff = T(4, 2);
-            zOff = T(4, 3);
-            
-            % Testing
-%             pixelSizeUM = 1;
-%             stepSizeUM = 1;
-            
+            xOff = T(4, 1); %#ok<PROPLC>
+            yOff = T(4, 2); %#ok<PROPLC>
+            zOff = T(4, 3); %#ok<PROPLC>
+                        
             if xOff < 0
                 leadIn = 'Go right';
                 p = -1;
@@ -227,7 +226,7 @@ classdef VolumeRegistrationTool < guiClass
                 leadIn = 'Go up';
                 p = -1;
             else
-                leadIn = 'Go down';
+                leadIn = 'Go deeper';
                 p = 1;
             end
             s = sprintf('%s %.1f um', leadIn, p*zOff*stepSizeUM);

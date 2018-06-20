@@ -1,8 +1,8 @@
-function frames = labelMov(mov, frameInfo)
+function frames = labelMov(mov, frameInfo, seqType)
 
 frames = struct('cdata', {}, 'colormap', {});
 eventValues = extractfield(frameInfo, 'EventValue');
-seqSpecs = sequenceSpecs;
+seqSpecs = sequenceSpecs(seqType);
 for ii=1:size(mov, 1)
     label = eventValueToLabel(eventValues(ii), seqSpecs);
     f = squeeze(mov(ii, :, :));

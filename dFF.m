@@ -22,7 +22,7 @@ if length(shape) == 2
 elseif length(shape) == 3
     
     % Perform DFF on pixels of a movie.
-    processed = traces - movmin(traces, window, 3);
+    processed = traces - movmin(traces, window, 1);
 
 else
     error('Input has bad dimensions.')

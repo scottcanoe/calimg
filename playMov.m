@@ -1,11 +1,13 @@
-function [] = playMov(mov, frameInfo, varargin)
+function [] = playMov(mov, frameInfo, seqType)
 
-FPS = parseVarargin(varargin, 'FPS', 15);
+
 mov = prepMov(mov);
-if nargin == 2
-    frames = labelMov(mov, frameInfo);
+FPS = 30;
+if nargin == 3
+    frames = labelMov(mov, frameInfo, seqType);
     implay(frames, FPS);
 else
+    mov = permute(mov, [2 3 1]);
     implay(mov, FPS);
 end
 

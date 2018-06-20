@@ -9,8 +9,8 @@ function mov = tiffseries_read(parentDir, startFrame, stopFrame)
 % Get info about tiff stack.
 info = tiffseries_info(parentDir);
 numTiffs = info.numFrames; 
-d1 = info.frameSize(2);
-d2 = info.frameSize(3);
+d1 = info.frameSize(1);
+d2 = info.frameSize(2);
 
 if nargin == 1
     startFrame = 1;

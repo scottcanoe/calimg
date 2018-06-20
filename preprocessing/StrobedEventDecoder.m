@@ -70,6 +70,12 @@ classdef StrobedEventDecoder < handle & matlab.mixin.SetGet
             frame_trigger = int32(SyncData('FrameTrigger'));
             ft_diffs = [0 diff(frame_trigger)'];
             ft_changed = int32(find(ft_diffs));
+            if ft_diffs(ft_changed(1)) == -1
+                frame_trigger(1:ft_changed(1)) = 0;
+                ft_diffs = [0 diff(frame_trigger)'];
+                ft_changed = int32(find(ft_diffs));
+                SyncData('FrameTrigger') = frame_trigger;
+            end
             trigger_off = ft_changed(2);
             
             % Find where 'Frame Out' changes.

@@ -1,29 +1,18 @@
-mouse = 'Cambria';
-date = '2018-05-04';
-expnum = '3';
+mouse = 'CP1';
+date = '2018-06-12';
+expnum = '1';
 
-tiffsDir = fullfile(s2p.registrationRoot, mouse, date, expnum, 'Plane1');
-fname = [date '_' expnum '_' mouse '_2P_plane1_1.tif'];
-rawmov = tiffstack_read(fullfile(tiffsDir, fname));
+% rawmov = loadMov(mouse, date, expnum);
+% frameInfo = loadFrameInfo(mouse, date, expnum);
+% seqType = 'random drifting gratings';
+% 
+% mov = prepMov(rawmov);
+% frames = labelMov(mov, frameInfo, seqType);
 
-% Rescale.
-mov2 = double(mov);
-maxval = prctile(mov2(:), 98);
-mov2 = mov2/maxval;
-mov2(mov2>1) = 1;
-
-% Smooth.
-mov2 = smooth3(mov2, 'box', [5 1 1]);
-if exist('movie.avi', 'file')
-    delete('movie.avi');
-end
-outFile = 'test.avi';
-% outFile = [outFile mouse '_' date '_' expnum '.avi'];
-v = VideoWriter(outFile, 'Motion JPEG AVI');
+v = VideoWriter('CP1_random_drifting_gratings.avi', 'Motion JPEG AVI');
 v.FrameRate = 30;
 open(v);
-for ii=1:size(mov2,1)
-    frame = squeeze(mov2(ii, :, :));
-    writeVideo(v, frame);
+for ii=1:size(mov,1)
+    writeVideo(v, frames(ii).cdata);
 end
 close(v);

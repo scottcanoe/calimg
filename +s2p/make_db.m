@@ -5,7 +5,7 @@
 i = 0;
 
 i = i+1;
-db(i).mouse_name    = '330873-A';
+db(i).mouse_name    = 'CP1';
 db(i).date          = '2018-05-15';
 db(i).expts         = [1];
 db(i).diameter      = 14; % Taken at 2X.

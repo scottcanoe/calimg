@@ -36,8 +36,9 @@ numZSlices = str2num(imInfo.ThorImageExperiment.ZStage.Attributes.steps);
 activeChannels = de2bi_tl(str2num(imInfo.ThorImageExperiment.Wavelengths.ChannelEnable.Attributes.Set));
 activeChannelsList = find(activeChannels==1);
 numChannels = sum(activeChannelsList);
+captureMode = str2num(imInfo.ThorImageExperiment.CaptureMode.Attributes.mode);
 
-if or(numZSlices ~= 1, numChannels ~= 1)
+if or(captureMode ~= 1, numChannels ~= 1)
     msg = 'This function currently only supports single-plane, single-channel';
     msg = [msg ' movies. Fall back on original Thorlabs scripts.'];
     error(msg);
